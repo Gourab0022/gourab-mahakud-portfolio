@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gourab Portfolio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;scroll-behavior:smooth;}
+
+body{background:#0a0a0a;color:#fff;overflow-x:hidden;transition:0.4s;}
+.light-mode{background:#f5f5f5;color:#111;}
+
+/* SCROLL PROGRESS BAR */
+.progress-bar{
+  position:fixed;
+  top:0;left:0;
+  height:3px;
+  background:#00f7ff;
+  width:0%;
+  z-index:2000;
+}
+
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+
+nav{position:fixed;width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);z-index:1000;transition:0.3s;}
+nav.scrolled{padding:12px 40px;background:rgba(0,0,0,0.7);backdrop-filter:blur(20px);box-shadow:0 5px 20px rgba(0,0,0,0.5);}
+
+.theme-toggle{background:#00f7ff;color:#000;padding:6px 12px;border-radius:10px;cursor:pointer;}
+
+nav ul{display:flex;gap:25px;list-style:none;}
+nav ul li a{text-decoration:none;color:white;position:relative;padding-bottom:4px;}
+
+nav ul li a::after{
+  content:"";
+  position:absolute;
+  left:0;bottom:0;
+  width:100%;height:2px;
+  background:#00f7ff;
+  transform:scaleX(0);
+  transition:0.3s;
+}
+
+nav ul li a:hover::after,
+nav ul li a.active::after{transform:scaleX(1);} 
+
+nav ul li a.active{color:#00f7ff;}
+
+.hero{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+
+.profile-wrapper{position:relative;}
+.profile-pic{width:180px;height:180px;border-radius:50%;border:4px solid #00f7ff;box-shadow:0 0 40px #00f7ff;transition:0.4s;}
+.profile-overlay{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:0.4s;}
+.profile-wrapper:hover .profile-overlay{opacity:1;}
+.profile-wrapper:hover .profile-pic{transform:scale(1.1);} 
+
+.hero h1{font-size:4rem;background:linear-gradient(90deg,#00f7ff,#ff00ff);-webkit-background-clip:text;color:transparent;}
+
+.btn{padding:12px 30px;border:none;border-radius:30px;background:#00f7ff;color:#000;cursor:pointer;transition:0.2s;}
+.btn:hover{background:#ff00ff;color:#fff;transform:scale(1.1);} 
+
+section{padding:80px 10%;opacity:0;transform:translateY(50px);transition:0.6s;}
+section.show{opacity:1;transform:translateY(0);} 
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;}
+
+.card{background:rgba(255,255,255,0.05);backdrop-filter:blur(15px);border-radius:20px;padding:30px;text-align:center;font-size:1.2rem;font-weight:600;transition:0.4s;}
+.card:hover{transform:translateY(-15px) scale(1.05);box-shadow:0 0 25px #00f7ff;} 
+
+form{max-width:500px;margin:auto;display:flex;flex-direction:column;gap:15px;}
+input,textarea{padding:12px;border:none;border-radius:10px;background:#111;color:#fff;}
+
+footer{text-align:center;padding:30px;background:#111;}
+
+</style>
+</head>
+
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<canvas id="bg"></canvas>
+
+<nav>
+<h1>Gourab</h1>
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#about">About</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+<div class="theme-toggle" onclick="toggleTheme()">Theme</div>
+</nav>
+
+<div class="hero" id="home">
+<div class="profile-wrapper">
+<img src="webbppic.jpg" class="profile-pic">
+<div class="profile-overlay">View Profile</div>
+</div>
+<h1 id="typing"></h1>
+<p>Frontend Developer | Creative Coder</p>
+<button class="btn">Explore My Work</button>
+</div>
+
+<section id="about"><h2>About Me</h2><p>I craft visually stunning and highly interactive web experiences.</p></section>
+
+<section id="skills"><h2>Skills</h2>
+<div class="grid">
+<div class="card">HTML</div>
+<div class="card">CSS</div>
+<div class="card">JavaScript</div>
+<div class="card">React</div>
+<div class="card">Python</div>
+</div>
+</section>
+
+<section id="contact"><h2>Contact Me</h2>
+<form id="contactForm">
+<input type="text" name="name" placeholder="Your Name" required>
+<input type="email" name="email" placeholder="Your Email" required>
+<textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+<button class="btn" type="submit">Send Message</button>
+</form>
+<p id="successMsg" style="margin-top:15px;color:#00f7ff;display:none;"></p>
+</section>
+
+<footer><p>© 2026 Gourab</p></footer>
+
+<script>
+
+// FIX: define nav element
+const nav = document.querySelector('nav');
+const typing = document.getElementById('typing');
+const bg = document.getElementById('bg');
+const contactForm = document.getElementById('contactForm');
+const successMsg = document.getElementById('successMsg');
+const progressBar = document.getElementById('progressBar');
+function toggleTheme(){document.body.classList.toggle('light-mode');}
+
+(function(){emailjs.init("YOUR_PUBLIC_KEY");})();
+
+// typing
+const text="GOURAB MAHAKUD";let i=0;
+(function type(){if(i<text.length){typing.innerHTML+=text[i++];setTimeout(type,100);}})();
+
+// particles
+const c = bg.getContext('2d');bg.width=innerWidth;bg.height=innerHeight;
+let p=[];for(let i=0;i<60;i++)p.push({x:Math.random()*bg.width,y:Math.random()*bg.height,dx:Math.random()-0.5,dy:Math.random()-0.5});
+(function draw(){c.clearRect(0,0,bg.width,bg.height);p.forEach(e=>{c.fillStyle='#00f7ff';c.fillRect(e.x,e.y,2,2);e.x+=e.dx;e.y+=e.dy;});requestAnimationFrame(draw);})();
+
+// form
+contactForm.addEventListener('submit',function(e){
+ e.preventDefault();
+ successMsg.style.display='block';
+ successMsg.innerText='Sending...';
+ emailjs.sendForm('YOUR_SERVICE_ID','YOUR_TEMPLATE_ID',this)
+ .then(()=>{successMsg.innerText='Message sent!';contactForm.reset();},()=>{successMsg.innerText='Error!';});
+});
+
+// scroll progress
+window.onscroll=()=>{
+ let sc=(scrollY/(document.body.scrollHeight-innerHeight))*100;
+ progressBar.style.width=sc+'%';
+};
+
+// reveal animation
+const sections=document.querySelectorAll('section');
+window.addEventListener('scroll',()=>{
+ sections.forEach(sec=>{
+  const top=sec.getBoundingClientRect().top;
+  if(top<window.innerHeight-100){sec.classList.add('show');}
+ });
+});
+
+// navbar active
+const navLinks=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+ let current='';
+ document.querySelectorAll('section, .hero').forEach(sec=>{
+  if(scrollY>=sec.offsetTop-100) current=sec.id;
+ });
+ navLinks.forEach(link=>{
+  link.classList.remove('active');
+  if(link.getAttribute('href')==='#'+current) link.classList.add('active');
+ });
+});
+
+// navbar shrink
+window.addEventListener('scroll',()=>{
+ nav.classList.toggle('scrolled',scrollY>50);
+});
+
+</script>
+
+</body>
+</html>
